@@ -43,4 +43,15 @@ services:
         "--",
         "/docker-entrypoint.sh",
       ]
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "public-traefik"
+      traefik.http.routers.passbolt-http.entrypoints: "web"
+      traefik.http.routers.passbolt-http.rule: "Host(`passbolt.liuf.uk`)"
+      traefik.http.routers.passbolt-http.middlewares: "SslHeader@file"
+      traefik.http.routers.passbolt-https.tls: "true"
+      traefik.http.routers.passbolt-https.tls.certresolver: "production"
+      traefik.http.routers.passbolt-https.entrypoints: "websecure"
+      traefik.http.routers.passbolt-https.rule: "Host(`passbolt.liuf.uk`)"
+      traefik.http.routers.passbolt-https.middlewares: "SslHeader@file"
     restart: unless-stopped
