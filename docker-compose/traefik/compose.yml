@@ -1,0 +1,26 @@
+---
+# -- (Optional) When using a custom network
+networks:
+  public-traefik:
+    external: true
+
+services:
+  traefik:
+    image: docker.io/library/traefik:v3.1.5
+    container_name: traefik
+    env_file:
+      - ./.env
+    ports:
+      - 80:80
+      - 443:443
+      # -- (Optional) Enable Dashboard, don't do in production
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - /run/docker.sock:/run/docker.sock:ro
+      - ./config/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - ./config/conf/:/etc/traefik/conf/
+      - ./config/certs/:/etc/traefik/certs/
+    # -- (Optional) When using a custom network
+    networks:
+      - public-traefik
+    restart: unless-stopped
