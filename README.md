@@ -1,4 +1,4 @@
 # TODO
 
-- [ ] traefik
-- [ ] passbolt
+- [x] traefik
+- [x] passbolt
