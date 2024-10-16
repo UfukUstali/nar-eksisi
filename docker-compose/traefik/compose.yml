@@ -17,7 +17,7 @@ services:
       - "127.0.0.1:8080:8080"
     volumes:
       - /run/docker.sock:/run/docker.sock:ro
-      - ./config/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./config/conf/:/etc/traefik/conf/
       - ./config/certs/:/etc/traefik/certs/
     # -- (Optional) When using a custom network
