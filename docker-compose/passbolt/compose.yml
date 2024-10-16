@@ -8,7 +8,7 @@ networks:
   public-traefik:
     external: true
   passbolt-network:
-
+    external: true
 services:
   passbolt-db:
     container_name: passbolt-db
