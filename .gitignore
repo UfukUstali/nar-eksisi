@@ -1,5 +1,8 @@
 .env
 .env.*
 !.env*.example
+authkeyfile
+authkeyfile.*
+!authkeyfile.example
 docker-compose/traefik/config/certs
 

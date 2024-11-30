@@ -1,5 +1,13 @@
 {
   "files.associations": {
     "**/docker-compose/**/compose.yml": "dockercompose"
-  }
+  },
+  "cSpell.words": [
+    "authkey",
+    "authkeyfile",
+    "controlurl",
+    "defaultproxyprovider",
+    "proxyaccesslog",
+    "targethostname"
+  ]
 }

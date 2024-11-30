@@ -1,0 +1,18 @@
+---
+networks:
+  tsdproxy:
+    external: true
+
+services:
+  tsdproxy:
+    image: almeidapaulopt/tsdproxy:1.0.0-rc2
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - datadir:/data
+      - ./config:/config
+    networks:
+      - tsdproxy
+    restart: unless-stopped
+
+volumes:
+  datadir:

@@ -3,6 +3,8 @@
 networks:
   public-traefik:
     external: true
+  tsdproxy:
+    external: true
 
 services:
   traefik:
@@ -14,7 +16,7 @@ services:
       - 80:80
       - 443:443
       # -- (Optional) Enable Dashboard, don't do in production
-      - "127.0.0.1:8080:8080"
+      # - "127.0.0.1:8080:8080"
     volumes:
       - /run/docker.sock:/run/docker.sock:ro
       - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
@@ -23,4 +25,9 @@ services:
     # -- (Optional) When using a custom network
     networks:
       - public-traefik
+      - tsdproxy
+    labels:
+      tsdproxy.enable: "true"
+      tsdproxy.name: "traefik"
+      tsdproxy.container_port: 8080
     restart: unless-stopped
