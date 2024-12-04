@@ -1,0 +1,62 @@
+---
+name: matrix
+
+networks:
+  public-traefik:
+    external: true
+  matrix-internal:
+
+volumes:
+  dendrite_postgres_data:
+  dendrite_media:
+  dendrite_jetstream:
+  dendrite_search_index:
+
+services:
+  db:
+    container_name: db
+    image: postgres:15-alpine
+    volumes:
+      # This will create a docker volume to persist the database files in.
+      # If you prefer those files to be outside of docker, you'll need to change this.
+      - dendrite_postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./.env.db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dendrite"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - matrix-internal
+    restart: unless-stopped
+
+  dendrite:
+    container_name: dendrite
+    image: matrixdotorg/dendrite-monolith:v0.13.8
+    ports:
+      # - 8008:8008 # default port for the client-server API, will be taken by traefik
+      # - 8448:8448 # Uncomment this line if you want to enable federation and setup tls for it
+    volumes:
+      - ./config:/etc/dendrite
+      # The following volumes use docker volumes, change this
+      # if you prefer to have those files outside of docker.
+      - dendrite_media:/var/dendrite/media
+      - dendrite_jetstream:/var/dendrite/jetstream
+      - dendrite_search_index:/var/dendrite/searchindex
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - public-traefik
+      - matrix-internal
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "public-traefik"
+      traefik.http.services.matrix.loadbalancer.server.port: "8008"
+      traefik.http.services.matrix.loadbalancer.server.scheme: "http"
+      traefik.http.routers.matrix-https.entrypoints: "websecure"
+      traefik.http.routers.matrix-https.rule: "Host(`matrix.liuf.uk`)" # <-- Replace with your FQDN
+      traefik.http.routers.matrix-https.tls: "true"
+      traefik.http.routers.matrix-https.tls.certresolver: "production" # <-- Replace with your certresolver
+    restart: unless-stopped
