@@ -1,0 +1,84 @@
+---
+name: gitea
+
+volumes:
+  gitea-app-data:
+    driver: local
+  # --> When using internal database
+  gitea-db-data:
+    driver: local
+  gitea-runner-data:
+    driver: local
+  # <--
+
+# --> (Optional) When using traefik...
+networks:
+  public-traefik:
+    external: true
+  gitea-internal:
+
+services:
+  app:
+    image: gitea/gitea:1.22.4
+    container_name: app
+    env_file:
+      - ./.env.app
+    networks:
+      - public-traefik
+      - gitea-internal
+    volumes:
+      - gitea-app-data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      # --> (Optional) Remove when using traefik...
+      # - "3000:3000"
+      # <--
+      - "2221:22" # <-- (Optional) Replace with your desired SSH port
+    depends_on:
+      - db
+    # --> (Optional) When using traefik...
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.gitea.loadbalancer.server.port: "3000"
+      traefik.http.services.gitea.loadbalancer.server.scheme: "http"
+      traefik.http.routers.gitea-https.entrypoints: "websecure"
+      traefik.http.routers.gitea-https.rule: "Host(`gitea.liuf.uk`)" # <-- Replace with your FQDN
+      traefik.http.routers.gitea-https.tls: "true"
+      traefik.http.routers.gitea-https.tls.certresolver: "production" # <-- Replace with your certresolver
+    # <--
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://gitea.liuf.uk/health"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # --> When using internal database
+  db:
+    container_name: db
+    image: mysql:lts
+    env_file:
+      - ./.env.db
+    volumes:
+      - gitea-db-data:/var/lib/mysql
+    networks:
+      - gitea-internal
+    restart: unless-stopped
+  # <--
+
+  # runner:
+  #   image: gitea/act_runner:0.2.11
+  #   container_name: runner
+  #   env_file:
+  #     - ./.env.runner
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - gitea-runner-data:/data
+  #   networks:
+  #     - gitea-internal
+  #   depends_on:
+  #     app:
+  #       condition: service_healthy
+  #       restart: true
