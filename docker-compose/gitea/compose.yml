@@ -48,7 +48,7 @@ services:
       traefik.http.routers.gitea-https.tls.certresolver: "production" # <-- Replace with your certresolver
     # <--
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://gitea.liuf.uk/health"]
+      test: ["CMD", "curl", "-f", "http://app:3000"]
       interval: 30s
       timeout: 30s
       retries: 5
@@ -68,17 +68,17 @@ services:
     restart: unless-stopped
   # <--
 
-  # runner:
-  #   image: gitea/act_runner:0.2.11
-  #   container_name: runner
-  #   env_file:
-  #     - ./.env.runner
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     - gitea-runner-data:/data
-  #   networks:
-  #     - gitea-internal
-  #   depends_on:
-  #     app:
-  #       condition: service_healthy
-  #       restart: true
+  runner:
+    image: gitea/act_runner:0.2.11
+    container_name: runner
+    env_file:
+      - ./.env.runner
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - gitea-runner-data:/data
+    networks:
+      - gitea-internal
+    depends_on:
+      app:
+        condition: service_healthy
+        restart: true
