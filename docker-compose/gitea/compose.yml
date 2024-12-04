@@ -83,3 +83,4 @@ services:
       app:
         condition: service_healthy
         restart: true
+    restart: unless-stopped
