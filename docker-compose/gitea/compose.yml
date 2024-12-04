@@ -40,6 +40,7 @@ services:
     # --> (Optional) When using traefik...
     labels:
       traefik.enable: "true"
+      traefik.docker.network: "public-traefik"
       traefik.http.services.gitea.loadbalancer.server.port: "3000"
       traefik.http.services.gitea.loadbalancer.server.scheme: "http"
       traefik.http.routers.gitea-https.entrypoints: "websecure"
