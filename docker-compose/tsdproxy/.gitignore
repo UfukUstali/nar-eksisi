@@ -1,0 +1,3 @@
+config/authkeyfile
+config/authkeyfile.*
+!config/authkeyfile.example
