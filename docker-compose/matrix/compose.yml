@@ -14,7 +14,7 @@ volumes:
 
 services:
   db:
-    container_name: db
+    container_name: dendrite-db
     image: postgres:15-alpine
     volumes:
       # This will create a docker volume to persist the database files in.
@@ -34,7 +34,7 @@ services:
   dendrite:
     container_name: dendrite
     image: matrixdotorg/dendrite-monolith:v0.13.8
-    ports:
+    # ports:
       # - 8008:8008 # default port for the client-server API, will be taken by traefik
       # - 8448:8448 # Uncomment this line if you want to enable federation and setup tls for it
     volumes:
@@ -45,7 +45,7 @@ services:
       - dendrite_jetstream:/var/dendrite/jetstream
       - dendrite_search_index:/var/dendrite/searchindex
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
     networks:
       - public-traefik
