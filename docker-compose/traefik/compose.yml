@@ -3,12 +3,10 @@
 networks:
   public-traefik:
     external: true
-  tsdproxy:
-    external: true
 
 services:
   traefik:
-    image: docker.io/library/traefik:v3.1.5
+    image: docker.io/library/traefik:v3.6.10
     container_name: traefik
     env_file:
       - ./.env
@@ -25,9 +23,4 @@ services:
     # -- (Optional) When using a custom network
     networks:
       - public-traefik
-      - tsdproxy
-    labels:
-      tsdproxy.enable: "true"
-      tsdproxy.name: "traefik"
-      tsdproxy.container_port: 8080
     restart: unless-stopped
