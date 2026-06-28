@@ -1,35 +1,29 @@
 ---
-volumes:
-  passbolt-db:
-  passbolt-gpg:
-  passbolt-jwt:
-
 networks:
   public-traefik:
     external: true
   passbolt-network:
-    external: true
 
 services:
-  passbolt-db:
+  db:
     image: docker.io/library/mariadb:11.3
     env_file:
       - ./.env.db
     volumes:
-      - passbolt-db:/var/lib/mysql
+      - /mnt/palette/nar-eksisi/docker/passbolt/db/:/var/lib/mysql
     networks:
       - passbolt-network
     restart: unless-stopped
 
-  passbolt:
+  app:
     image: docker.io/passbolt/passbolt:5.5.2-1-ce
     depends_on:
-      - passbolt-db
+      - db
     env_file:
       - ./.env.passbolt
     volumes:
-      - passbolt-gpg:/etc/passbolt/gpg
-      - passbolt-jwt:/etc/passbolt/jwt
+      - /mnt/palette/nar-eksisi/docker/passbolt/app/gpg:/etc/passbolt/gpg
+      - /mnt/palette/nar-eksisi/docker/passbolt/app/jwt:/etc/passbolt/jwt
     networks:
       - public-traefik
       - passbolt-network
@@ -38,7 +32,7 @@ services:
         "/usr/bin/wait-for.sh",
         "-t",
         "0",
-        "passbolt-db:3306",
+        "db:3306",
         "--",
         "/docker-entrypoint.sh",
       ]
