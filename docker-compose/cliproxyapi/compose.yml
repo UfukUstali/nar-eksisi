@@ -1,0 +1,47 @@
+---
+
+services:
+  tailscale:
+    image: tailscale/tailscale:stable
+    container_name: cliproxyapi-tailscale
+    hostname: cliproxyapi
+    restart: unless-stopped
+    environment:
+      TS_AUTHKEY: ${TS_AUTHKEY}
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_SERVE_CONFIG: /config/serve.json
+    cap_add:
+      - net_admin
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - tailscale-state:/var/lib/tailscale
+      - ./tailscale:/config
+    ports:
+      - "127.0.0.1:1455:1455"
+      - "127.0.0.1:54545:54545"
+      - "127.0.0.1:8085:8085"
+      - "127.0.0.1:11451:11451"
+
+  cliproxyapi:
+    image: eceasy/cli-proxy-api:latest
+    container_name: cliproxyapi
+    restart: unless-stopped
+    network_mode: "service:tailscale"
+    depends_on:
+      - tailscale
+    volumes:
+      - ./config.yaml:/CLIProxyAPI/config.yaml
+      - cliproxyapi-auth:/root/.cli-proxy-api
+      - cliproxyapi-logs:/CLIProxyAPI/logs
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/8317"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  tailscale-state:
+  cliproxyapi-auth:
+  cliproxyapi-logs:
