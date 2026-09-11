@@ -1,0 +1,9 @@
+tls:
+  stores:
+    default:
+      defaultGeneratedCert:
+        resolver: production
+        domain:
+          main: devrp.liuf.uk
+          sans:
+            - '*.devrp.liuf.uk'
