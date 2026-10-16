@@ -28,12 +28,15 @@ entryPoints:
     address: :80
     # -- (Optional) Redirect all HTTP to HTTPS
     http:
+      aliasHeadersStrategy: delete
       redirections:
         entryPoint:
           to: websecure
           scheme: https
   websecure:
     address: :443
+    http:
+      aliasHeadersStrategy: delete
   # -- (Optional) Add custom Entrypoint
   # custom:
   #   address: :8080
