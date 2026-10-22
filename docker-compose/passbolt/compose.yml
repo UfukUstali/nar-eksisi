@@ -16,7 +16,8 @@ services:
     restart: unless-stopped
 
   app:
-    image: docker.io/passbolt/passbolt:5.5.2-1-ce
+    # October 21, 2026 rebuild with patched PHP for CVE-2026-109618 and CVE-2026-109619.
+    image: docker.io/passbolt/passbolt:5.17.0-1-ce@sha256:cced3dab8de368ebda71d1890a67ffc1fabc43006c9cecdb994e0936a4ade0d1
     depends_on:
       - db
     env_file:
